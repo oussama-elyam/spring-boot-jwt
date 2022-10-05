@@ -19,6 +19,8 @@ import com.yamani.config.JwtTokenUtil;
 import com.yamani.model.JwtRequest;
 import com.yamani.model.JwtResponse;
 import com.yamani.service.JwtUserDetailsService;
+import com.yamani.model.UserDTO;
+
 
 @RestController
 @CrossOrigin
@@ -38,13 +40,16 @@ public class JwtAuthenticationController {
 
 		authenticate(authenticationRequest.getUsername(), authenticationRequest.getPassword());
 
-		final UserDetails userDetails = userDetailsService
-				.loadUserByUsername(authenticationRequest.getUsername());
-		
-		System.out.println("JwtAuthenticationController.createAuthenticationToken : yserDetailsService = "+userDetails);
+		final UserDetails userDetails = userDetailsService.loadUserByUsername(authenticationRequest.getUsername());
+
 		final String token = jwtTokenUtil.generateToken(userDetails);
-		System.out.println("JwtAuthenticationController.createAuthenticationToken : token = "+token);
+
 		return ResponseEntity.ok(new JwtResponse(token));
+	}
+
+	@RequestMapping(value = "/register", method = RequestMethod.POST)
+	public ResponseEntity<?> saveUser(@RequestBody UserDTO user) throws Exception {
+		return ResponseEntity.ok(userDetailsService.save(user));
 	}
 
 	private void authenticate(String username, String password) throws Exception {
